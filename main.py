@@ -3,7 +3,6 @@ import asyncio
 from dataclasses import dataclass
 from dotenv import load_dotenv
 import os
-import streamlit as st
 
 load_dotenv()
 
@@ -41,7 +40,7 @@ async def list_pages(url: str, key: str) -> list[WikiPage]:
 
 def main():
     pages = asyncio.run(list_pages(wiki_api_url, wiki_api_key))
-    st.json([page.__dict__ for page in pages])
+    print(pages)
 
 
 if __name__ == "__main__":
