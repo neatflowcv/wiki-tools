@@ -16,10 +16,11 @@ class WikiPage:
     id: str
     path: str
     title: str
+    locale: str
 
 
 async def list_pages(url: str, key: str) -> list[WikiPage]:
-    payload = {"query": "query { pages { list { id path title } } }"}
+    payload = {"query": "query { pages { list { id path title locale } } }"}
     async with aiohttp.ClientSession() as session:
         async with session.post(
             url,
@@ -31,7 +32,9 @@ async def list_pages(url: str, key: str) -> list[WikiPage]:
 
     pages = data.get("data", {}).get("pages", {}).get("list", [])
     return [
-        WikiPage(id=page["id"], path=page["path"], title=page["title"])
+        WikiPage(
+            id=page["id"], path=page["path"], title=page["title"], locale=page["locale"]
+        )
         for page in pages
     ]
 
