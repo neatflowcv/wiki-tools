@@ -38,6 +38,10 @@ async def list_pages(url: str, key: str) -> list[WikiPage]:
     ]
 
 
+async def move_page(page: WikiPage, new_path: str):
+    print(f"Moving page {page.id} {page.path} to {new_path}")
+
+
 def main():
     pages = asyncio.run(list_pages(wiki_api_url, wiki_api_key))
     print(pages)
