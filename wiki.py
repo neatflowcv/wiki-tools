@@ -57,3 +57,32 @@ async def move_page(url: str, key: str, page: WikiPage, new_path: str):
             resp.raise_for_status()
             data = await resp.json()
             print(data)
+
+
+async def delete_page(url: str, key: str, page_id: int):
+    print(f"Deleting page {page_id}")
+    payload = {
+        "query": "mutation DeletePage($id: Int!) { pages { delete(id: $id) { responseResult { succeeded message } } } }",
+        "variables": {
+            "id": page_id,
+        },
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            url,
+            headers={"Authorization": f"Bearer {key}"},
+            json=payload,
+        ) as resp:
+            resp.raise_for_status()
+            data = await resp.json()
+
+    result = (
+        data.get("data", {})
+        .get("pages", {})
+        .get("delete", {})
+        .get("responseResult", {})
+    )
+    if not result.get("succeeded"):
+        raise RuntimeError(
+            f"페이지 삭제 실패 (id={page_id}): {result.get('message', '알 수 없는 오류')}"
+        )

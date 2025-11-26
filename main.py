@@ -49,6 +49,21 @@ async def rename_pages_command(old_path: str, new_path: str):
         await wiki.move_page(url, key, target, new_target_path)
 
 
+async def delete_pages_command(ids: tuple[str, ...]):
+    if not ids:
+        raise click.ClickException("삭제할 페이지 ID를 하나 이상 지정하세요.")
+
+    url, key = ensure_credentials()
+    for page_id in ids:
+        try:
+            numeric_id = int(page_id)
+        except ValueError as exc:
+            raise click.ClickException(
+                f"정수 ID만 입력할 수 있습니다: {page_id}"
+            ) from exc
+        await wiki.delete_page(url, key, numeric_id)
+
+
 @click.group()
 def cli():
     """위키 페이지 관리 CLI"""
@@ -67,6 +82,13 @@ def list_command():
 def rename_command(old_path: str, new_path: str):
     """old_path 이하의 페이지를 new_path로 이동합니다."""
     asyncio.run(rename_pages_command(old_path, new_path))
+
+
+@cli.command("delete")
+@click.argument("ids", nargs=-1)
+def delete_command(ids: tuple[str, ...]):
+    """지정한 페이지 ID들을 삭제합니다."""
+    asyncio.run(delete_pages_command(ids))
 
 
 if __name__ == "__main__":
