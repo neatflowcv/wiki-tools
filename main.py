@@ -87,7 +87,6 @@ async def main():
     targets = [page for page in pages if page.is_parent_path(args.old_path)]
     print(targets)
 
-    tasks = []
     for target in targets:
         new_path = args.new_path + target.path[len(args.old_path) :]
 
@@ -95,11 +94,7 @@ async def main():
         if any(page.is_equal_path(new_path) for page in pages):
             new_path = new_path + "_dup"
 
-        tasks.append(
-            asyncio.create_task(move_page(wiki_api_url, wiki_api_key, target, new_path))
-        )
-
-    await asyncio.gather(*tasks)
+        await move_page(wiki_api_url, wiki_api_key, target, new_path)
 
 
 if __name__ == "__main__":
